@@ -18,10 +18,12 @@ while True:
     except OSError as error: 
             print(error) 
      
+    drop_count = 0 
     notify = ToastNotifier()
     if response.success() == False:
             print('timeout')
             notify.show_toast('Connection Alert', 'Connection to {} is down'.format(hostname))
+            drop_count += 1
     else:
         print('success', response.rtt_avg_ms)
 
@@ -48,10 +50,10 @@ while True:
     # display image in systray 
     formatted_hover_text = formatted_response + ' ms to ' + hostname
     if n==1:
-        systray = SysTrayIcon(image, hover_text = formatted_hover_text)
+        systray = SysTrayIcon(image, hover_text = formatted_hover_text + '\n' + drop_count + ' connection drops today.')
         systray.start()
     else:
-        systray.update(icon=image, hover_text = formatted_hover_text)
+        systray.update(icon=image, hover_text = formatted_hover_text + '\n' + drop_count + ' connection drops today.')
     n+=1
     
 
