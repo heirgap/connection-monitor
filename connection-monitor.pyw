@@ -11,7 +11,7 @@ image= "systray.ico"
 n=1
 while True:
 
-    response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=.2)
+    response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=2)
 
     try: 
         print('')  
@@ -46,7 +46,7 @@ while True:
     font_type  = ImageFont.truetype('calibrib.ttf', font_size)
     d.text((padding), formatted_response, fill=(255,255,255), font = font_type)
     img.save(image)
-    time.sleep(4)
+    
     # display image in systray 
     if n==1:
         systray = SysTrayIcon(image, formatted_response + 'ms')
