@@ -50,10 +50,10 @@ while True:
     # display image in systray 
     formatted_hover_text = formatted_response + ' ms to ' + hostname
     if n==1:
-        systray = SysTrayIcon(image, hover_text = formatted_hover_text + '\n' + drop_count + ' connection drops today.')
+        systray = SysTrayIcon(image, hover_text = formatted_hover_text + '\n' + str(drop_count) + ' connection drops today.')
         systray.start()
     else:
-        systray.update(icon=image, hover_text = formatted_hover_text + '\n' + drop_count + ' connection drops today.')
+        systray.update(icon=image, hover_text = formatted_hover_text +  '\n' +  str(drop_count) +  ' connection drops today.')
     n+=1
     
 
