@@ -6,12 +6,12 @@ from PIL import Image, ImageDraw,ImageFont
 
 
 hostname = "8.8.8.8"
-count = 1
+count = 5
 image= "systray.ico"
 n=1
 while True:
 
-    response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=5)
+    response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=1)
 
     try: 
         print('')  
