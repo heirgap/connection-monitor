@@ -1,5 +1,4 @@
 from win10toast import ToastNotifier
-import time
 from pythonping import ping
 from infi.systray import SysTrayIcon
 from PIL import Image, ImageDraw,ImageFont
@@ -12,6 +11,7 @@ n=1
 while True:
 
     response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=2)
+    formatted_response = "{:.0f}".format(response.rtt_avg_ms)
 
     try: 
         print('')  
@@ -24,8 +24,6 @@ while True:
             notify.show_toast('Connection Alert', 'Connection to {} is down'.format(hostname))
     else:
         print('success', response.rtt_avg_ms)
-
-    formatted_response = "{:.0f}".format(response.rtt_avg_ms)
 
     # create image
     img = Image.new('RGBA', (50, 50), color = (255, 255, 255, 0))  # color background =  white  with transparency
@@ -48,11 +46,12 @@ while True:
     img.save(image)
     
     # display image in systray 
+    formatted_hover_text = formatted_response + ' ms to ' + hostname
     if n==1:
-        systray = SysTrayIcon(image, formatted_response + 'ms')
+        systray = SysTrayIcon(image, hover_text = formatted_hover_text)
         systray.start()
     else:
-        systray.update(icon=image)
+        systray.update(icon=image, hover_text = formatted_hover_text)
     n+=1
     
 
