@@ -26,7 +26,7 @@ while True:
         print('success', response.rtt_avg_ms)
 
     # create image
-    img = Image.new('RGBA', (50, 50), color = (255, 255, 255, 0))  # color background =  white  with transparency
+    img = Image.new('RGBA', (50, 50), color = (0, 0, 0, 0))  # color background =  white  with transparency
     d = ImageDraw.Draw(img)
     d.rectangle([(0, 0), (50, 50)], fill=(255, 255, 255, 0), outline=None)
 
