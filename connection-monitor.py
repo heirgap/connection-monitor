@@ -4,10 +4,10 @@ import time
 from pythonping import ping
 from infi.systray import SysTrayIcon
 from PIL import Image, ImageDraw,ImageFont
-import logging
+import os
 
 
-
+r, w = os.pipe() 
 hostname = "8.8.8.8"
 count = 5
 image= "systray.ico"
@@ -15,6 +15,12 @@ n=1
 while True:
 
     response = ping(hostname,timeout = 1, size=1, count=count, verbose=False)
+
+    try: 
+        print('')  
+    except OSError as error: 
+            print(error) 
+     
     notify = ToastNotifier()
     if response.success() == False:
             print('timeout')
@@ -28,7 +34,7 @@ while True:
     # create image
     img = Image.new('RGBA', (50, 50), color = (255, 255, 255, 0))  # color background =  white  with transparency
     d = ImageDraw.Draw(img)
-    d.rectangle([(0, 0), (50, 50)], fill=(255, 255, 255, 0), outline=None)  #  color = blue
+    d.rectangle([(0, 0), (50, 50)], fill=(255, 255, 255, 0), outline=None)
    
      # add scaled text to image
     if len(formatted_response) <= 2:
@@ -44,6 +50,7 @@ while True:
     font_type  = ImageFont.truetype('calibrib.ttf', font_size)
     d.text((padding), formatted_response, fill=(255,255,255), font = font_type)
     img.save(image)
+
     # display image in systray 
     if n==1:
         systray = SysTrayIcon(image, formatted_response + 'ms')
