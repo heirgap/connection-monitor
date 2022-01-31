@@ -1,6 +1,6 @@
 # connection-monitor
 
-This tool monitors your connection by sending periodic pings out to a designated host, triggers a Windows toast notification when connection is lost and displays current latency in the Windows taskbar.
+This tool monitors your connection by sending periodic pings out to a host(8.8.8.8 by default), triggers a Windows toast notification when connection is lost and displays current latency in the Windows taskbar.
 
-Use cases include WFM situations where connection is critical, this tools allows you to monitor and stay on top of your network connection.
+Use case includes WFM situations where connection is critical. This tool allows you to monitor and stay on top of your network connection.
 
