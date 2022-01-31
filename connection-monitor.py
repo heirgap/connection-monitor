@@ -4,7 +4,8 @@ from infi.systray import SysTrayIcon
 from PIL import Image, ImageDraw,ImageFont
 
 
-hostname = "8.8.8.8"
+hostname = input('Enter the host url or ip you would like to check connection to:\n')
+
 count = 5
 image= "systray.ico"
 n=1
@@ -13,11 +14,13 @@ while True:
     response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=2)
     formatted_response = "{:.0f}".format(response.rtt_avg_ms)
 
+    # catches Windows errors during connection drops. i.e. connecting to and disconnecting from a VPN
     try: 
         print('')  
     except OSError as error: 
             print(error) 
      
+    # initializes the notification object and sets the conditions in which it is triggered
     drop_count = 0 
     notify = ToastNotifier()
     if response.success() == False:
@@ -32,17 +35,18 @@ while True:
     d = ImageDraw.Draw(img)
     d.rectangle([(0, 0), (50, 50)], fill=(255, 255, 255, 0), outline=None)
 
-     # add scaled text to image
+     # scale text size based on number of characters
     if len(formatted_response) <= 2:
         font_size = 45
         padding = (5,5)
-    if len(formatted_response) >= 4:
+    elif len(formatted_response) >= 4:
         font_size = 30
         padding = (0,5)
-    elif len(formatted_response) == 3:
+    else:
         font_size = 32
         padding = (0,10)
 
+    # add text to image
     font_type  = ImageFont.truetype('calibrib.ttf', font_size)
     d.text((padding), formatted_response, fill=(255,255,255), font = font_type)
     img.save(image)
