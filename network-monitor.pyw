@@ -6,15 +6,17 @@ from PIL import Image, ImageDraw,ImageFont
 
 hostname = '8.8.8.8'
 
-count = 5
-image= "systray.ico"
-n=1
+pings_per_cycle = 5
+image = "systray.ico"
+i = 0
 drop_count = 0
+
 while True:
     try: 
-        response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=2)
-        # catches Windows errors during connection drops. i.e. connecting to and disconnecting from a VPN
+        response = ping(hostname,timeout = 1, size=1, count=pings_per_cycle, verbose=False, interval=2)
         formatted_response = "{:.0f}".format(response.rtt_avg_ms)
+        
+        # catch Windows errors during connection drops
     except OSError as error: 
             print(error) 
             
@@ -51,12 +53,15 @@ while True:
     
     # display image in systray 
     formatted_hover_text = formatted_response + ' ms to ' + hostname
-    if n==1:
-        systray = SysTrayIcon(image, hover_text = formatted_hover_text + '\n' + str(drop_count) + ' connection drops today.')
+    if i == 0:
+        i = (i + 1) * pings_per_cycle
+        systray = SysTrayIcon(image, hover_text = formatted_hover_text + '\n' + str(drop_count) + ' connection drops today.' + '\n' + str(i) + ' total pings sent')
         systray.start()
     else:
-        systray.update(icon=image, hover_text = formatted_hover_text +  '\n' +  str(drop_count) +  ' connection drops today.')
-    n+=1
+        i = (i + 1) * pings_per_cycle
+        systray.update(icon=image, hover_text = formatted_hover_text +  '\n' +  str(drop_count) +  ' connection drops today.' + '\n' + str(i) + ' total pings sent')
+        
+    
     
 
 
