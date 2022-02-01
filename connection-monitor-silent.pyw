@@ -9,19 +9,17 @@ hostname = '8.8.8.8'
 count = 5
 image= "systray.ico"
 n=1
+drop_count = 0
 while True:
-
-    response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=2)
-    formatted_response = "{:.0f}".format(response.rtt_avg_ms)
-
-    # catches Windows errors during connection drops. i.e. connecting to and disconnecting from a VPN
     try: 
-        print('')  
+        response = ping(hostname,timeout = 1, size=1, count=count, verbose=False, interval=2)
+        # catches Windows errors during connection drops. i.e. connecting to and disconnecting from a VPN
+        formatted_response = "{:.0f}".format(response.rtt_avg_ms)
     except OSError as error: 
             print(error) 
-     
+            
     # initializes the notification object and sets the conditions in which it is triggered
-    drop_count = 0 
+     
     notify = ToastNotifier()
     if response.success() == False:
             print('timeout')
