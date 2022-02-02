@@ -64,7 +64,7 @@ while True:
         total_pings = i * pings_per_cycle
         systray.update(icon=image, hover_text = formatted_hover_text +  '\n' +  str(drop_count) +  ' connection drops today.' + '\n' + str(total_pings) + ' total pings sent')
     i += 1
-    
+     
     
 
 
