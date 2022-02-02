@@ -12,12 +12,14 @@ image = "systray.ico"
 i = 1
 drop_count = 0
 
-# init log file
-log = open('latency_log.csv', 'a', newline='')
-writer = csv.writer(log, delimiter = ',',quoting=csv.QUOTE_NONE, escapechar=' ')
-writer.writerow(['date,latency'])
+
+
 while True:
     current_time = int(time.time())
+
+    
+
+
     try: 
         response = ping(hostname,timeout = 1, size=1, count=pings_per_cycle, verbose=False,interval=2)
         formatted_response = "{:.0f}".format(response.rtt_avg_ms)
@@ -39,7 +41,9 @@ while True:
     
     
     # write log entry
-    writer.writerow([current_time, int(response.rtt_avg_ms)])
+    with open('latency_log.csv', 'a', newline = '') as log:
+        writer = csv.writer(log, delimiter = ',',quoting=csv.QUOTE_NONE, escapechar='')
+        writer.writerow([current_time, int(response.rtt_avg_ms)])
 
     # init transparent image
     img = Image.new('RGBA', (50, 50), color = (0, 0, 0, 0))
