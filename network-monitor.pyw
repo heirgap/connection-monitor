@@ -11,10 +11,13 @@ pings_per_cycle = 5
 image = "systray.ico"
 i = 1
 drop_count = 0
-current_time = int(time.time())
 
-
+# init log file
+log = open('latency_log.csv', 'a', newline='')
+writer = csv.writer(log, delimiter = ',',quoting=csv.QUOTE_NONE, escapechar=' ')
+writer.writerow(['date,latency'])
 while True:
+    current_time = int(time.time())
     try: 
         response = ping(hostname,timeout = 1, size=1, count=pings_per_cycle, verbose=False,interval=2)
         formatted_response = "{:.0f}".format(response.rtt_avg_ms)
@@ -34,12 +37,7 @@ while True:
             print(error)
             drop_count += 1 
     
-
-    # init log file
-    log = open('latency_log.csv', 'a', newline='')
-    writer = csv.writer(log, delimiter = ',',quoting=csv.QUOTE_NONE, escapechar=' ')
     
-
     # write log entry
     writer.writerow([current_time, int(response.rtt_avg_ms)])
 
