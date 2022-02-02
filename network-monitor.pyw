@@ -2,7 +2,8 @@ from win10toast import ToastNotifier
 from pythonping import ping
 from infi.systray import SysTrayIcon
 from PIL import Image, ImageDraw,ImageFont
-
+import time
+import csv
 
 hostname = '8.8.8.8'
 
@@ -10,20 +11,22 @@ pings_per_cycle = 5
 image = "systray.ico"
 i = 1
 drop_count = 0
+current_time = int(time.time())
+
 
 while True:
     try: 
         response = ping(hostname,timeout = 1, size=1, count=pings_per_cycle, verbose=False,interval=2)
         formatted_response = "{:.0f}".format(response.rtt_avg_ms)
 
-        # initializes the notification object and sets conditions in which it is triggered
+        # init the notification object and sets conditions in which it is triggered
         notify = ToastNotifier()
         if response.success() == False:
                 print('timeout')
                 notify.show_toast('Connection Alert', 'Connection to {} is down'.format(hostname))
                 drop_count += 1
         else:
-            print('success', response.rtt_avg_ms)
+            print(current_time, int(response.rtt_avg_ms))
 
     # catch Windows errors and notifies user
     except OSError as error: 
@@ -32,8 +35,16 @@ while True:
             drop_count += 1 
     
 
-    # create image
-    img = Image.new('RGBA', (50, 50), color = (0, 0, 0, 0))  # color background =  white  with transparency
+    # init log file
+    log = open('latency_log.csv', 'a', newline='')
+    writer = csv.writer(log, delimiter = ',',quoting=csv.QUOTE_NONE, escapechar=' ')
+    
+
+    # write log entry
+    writer.writerow([current_time, int(response.rtt_avg_ms)])
+
+    # init transparent image
+    img = Image.new('RGBA', (50, 50), color = (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     d.rectangle([(0, 0), (50, 50)], fill=(255, 255, 255, 0), outline=None)
 
@@ -64,9 +75,8 @@ while True:
         total_pings = i * pings_per_cycle
         systray.update(icon=image, hover_text = formatted_hover_text +  '\n' +  str(drop_count) +  ' connection drops today.' + '\n' + str(total_pings) + ' total pings sent')
     i += 1
+     
     
-    
-
 
 
 
