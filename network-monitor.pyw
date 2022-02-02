@@ -8,27 +8,29 @@ hostname = '8.8.8.8'
 
 pings_per_cycle = 5
 image = "systray.ico"
-i = 0
+i = 1
 drop_count = 0
 
 while True:
     try: 
-        response = ping(hostname,timeout = 1, size=1, count=pings_per_cycle, verbose=False, interval=2)
+        response = ping(hostname,timeout = 1, size=1, count=pings_per_cycle, verbose=False,interval=2)
         formatted_response = "{:.0f}".format(response.rtt_avg_ms)
-        
-        # catch Windows errors during connection drops
+
+        # initializes the notification object and sets conditions in which it is triggered
+        notify = ToastNotifier()
+        if response.success() == False:
+                print('timeout')
+                notify.show_toast('Connection Alert', 'Connection to {} is down'.format(hostname))
+                drop_count += 1
+        else:
+            print('success', response.rtt_avg_ms)
+
+    # catch Windows errors and notifies user
     except OSError as error: 
-            print(error) 
-            
-    # initializes the notification object and sets the conditions in which it is triggered
-     
-    notify = ToastNotifier()
-    if response.success() == False:
-            print('timeout')
             notify.show_toast('Connection Alert', 'Connection to {} is down'.format(hostname))
-            drop_count += 1
-    else:
-        print('success', response.rtt_avg_ms)
+            print(error)
+            drop_count += 1 
+    
 
     # create image
     img = Image.new('RGBA', (50, 50), color = (0, 0, 0, 0))  # color background =  white  with transparency
@@ -53,14 +55,15 @@ while True:
     
     # display image in systray 
     formatted_hover_text = formatted_response + ' ms to ' + hostname
-    if i == 0:
-        i = (i + 1) * pings_per_cycle
-        systray = SysTrayIcon(image, hover_text = formatted_hover_text + '\n' + str(drop_count) + ' connection drops today.' + '\n' + str(i) + ' total pings sent')
+    
+    if i == 1:
+        total_pings = pings_per_cycle
+        systray = SysTrayIcon(image, hover_text = formatted_hover_text + '\n' + str(drop_count) + ' connection drops today.' + '\n' + str(total_pings) + ' total pings sent')
         systray.start()
     else:
-        i = (i + 1) * pings_per_cycle
-        systray.update(icon=image, hover_text = formatted_hover_text +  '\n' +  str(drop_count) +  ' connection drops today.' + '\n' + str(i) + ' total pings sent')
-        
+        total_pings = i * pings_per_cycle
+        systray.update(icon=image, hover_text = formatted_hover_text +  '\n' +  str(drop_count) +  ' connection drops today.' + '\n' + str(total_pings) + ' total pings sent')
+    i += 1
     
     
 
