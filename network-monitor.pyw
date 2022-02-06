@@ -2,8 +2,10 @@ from win10toast import ToastNotifier
 from pythonping import ping
 from infi.systray import SysTrayIcon
 from PIL import Image, ImageDraw,ImageFont
+from paramiko import SSHClient
 import time
 import csv
+
 
 hostname = '1.1.1.1'
 
@@ -11,6 +13,9 @@ pings_per_cycle = 5
 image = "systray.ico"
 i = 1
 drop_count = 0
+client = SSHClient()
+client.load_system_host_keys()
+client.connect('10.0.0.53', username='ubuntu', password='password')
 
 while True:
     current_time = int(time.time())
@@ -34,10 +39,12 @@ while True:
             drop_count += 1 
     
     
-    # write log entry
-    with open('latency_log.csv', 'a', newline = '') as log:
-        writer = csv.writer(log, delimiter = ',',quoting=csv.QUOTE_NONE, escapechar='')
-        writer.writerow([current_time, int(response.rtt_avg_ms)])
+    # # write log entry
+    # with open('latency_log.csv', 'a', newline = '') as log:
+    #     writer = csv.writer(log, delimiter = ',',quoting=csv.QUOTE_NONE, escapechar='')
+    #     writer.writerow([current_time, int(response.rtt_avg_ms)])
+    client.exec_command('echo {},{} >> /home/ubuntu/net-log/latency_log.csv'.format(current_time, int(response.rtt_avg_ms)))
+
 
     # init transparent image
     img = Image.new('RGBA', (50, 50), color = (0, 0, 0, 0))
