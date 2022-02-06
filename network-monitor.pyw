@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw,ImageFont
 import time
 import csv
 
-hostname = '8.8.8.8'
+hostname = '1.1.1.1'
 
 pings_per_cycle = 5
 image = "systray.ico"
