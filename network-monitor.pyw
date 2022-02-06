@@ -12,14 +12,8 @@ image = "systray.ico"
 i = 1
 drop_count = 0
 
-
-
 while True:
     current_time = int(time.time())
-
-    
-
-
     try: 
         response = ping(hostname,timeout = 1, size=1, count=pings_per_cycle, verbose=False,interval=2)
         formatted_response = "{:.0f}".format(response.rtt_avg_ms)
