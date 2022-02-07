@@ -4,23 +4,25 @@ from infi.systray import SysTrayIcon
 from PIL import Image, ImageDraw,ImageFont
 from paramiko import SSHClient
 import time
-import csv
-
+import socket
 
 hostname = '1.1.1.1'
 
 pings_per_cycle = 5
-image = "systray.ico"
-i = 1
 drop_count = 0
+
 client = SSHClient()
 client.load_system_host_keys()
 client.connect('10.0.0.53', username='ubuntu', password='password')
 
+local_machine = socket.gethostname()
+
+i = 1
+
 while True:
     current_time = int(time.time())
     try: 
-        response = ping(hostname,timeout = 1, size=1, count=pings_per_cycle, verbose=False,interval=2)
+        response = ping(hostname,timeout=1, size=1, count=pings_per_cycle, verbose=False,interval=2)
         formatted_response = "{:.0f}".format(response.rtt_avg_ms)
 
         # init the notification object and sets conditions in which it is triggered
@@ -38,14 +40,17 @@ while True:
             print(error)
             drop_count += 1 
     
+    local_path = '' + local_machine + '.csv'
+    remote_path = '/home/ubuntu/net-log/' + local_machine + '.csv'
+    sftp_client = client.open_sftp()
     
-    # # write log entry
-    # with open('latency_log.csv', 'a', newline = '') as log:
-    #     writer = csv.writer(log, delimiter = ',',quoting=csv.QUOTE_NONE, escapechar='')
-    #     writer.writerow([current_time, int(response.rtt_avg_ms)])
-    client.exec_command('echo {},{} >> /home/ubuntu/net-log/latency_log.csv'.format(current_time, int(response.rtt_avg_ms)))
-
-
+    try: 
+        sftp_client.stat(remote_path)
+        client.exec_command('echo ' + str(current_time) + ',' + str(int(response.rtt_avg_ms)) + ' >> /home/ubuntu/net-log/' + local_machine + '.csv')
+    except IOError:
+        client.exec_command('echo date,latency >> /home/ubuntu/net-log/' + local_machine + '.csv')
+        client.exec_command('echo ' + str(current_time) + ',' + str(int(response.rtt_avg_ms)) + ' >> /home/ubuntu/net-log/' + local_machine + '.csv')
+        
     # init transparent image
     img = Image.new('RGBA', (50, 50), color = (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -63,6 +68,7 @@ while True:
         padding = (0,10)
 
     # add text to image
+    image = "systray.ico"
     font_type  = ImageFont.truetype('calibrib.ttf', font_size)
     d.text((padding), formatted_response, fill=(255,255,255), font = font_type)
     img.save(image)
